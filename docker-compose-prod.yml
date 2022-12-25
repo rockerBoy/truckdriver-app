@@ -1,0 +1,19 @@
+version: "3.7"
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: ./docker-compose/nginx/Dockerfile
+    ports:
+      - "8080:80"
+    networks:
+      - truckdriver
+  php:
+    build:
+      context: .
+      dockerfile: ./docker-compose/php/Dockerfile
+      networks:
+        - truckdriver
+  networks:
+    truckdriver:
+      driver: bridge

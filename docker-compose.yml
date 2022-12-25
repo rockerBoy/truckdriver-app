@@ -1,0 +1,36 @@
+version: '3.7'
+services:
+    nginx:
+        image: nginx:1.21-alpine
+        container_name: rusnipizda-proxy
+        ports:
+            - '8080:80'
+            - '443:443'
+        volumes:
+            - ./truckdriver_laravel:/var/www/html/
+            - ./logs/nginx:/var/log/nginx/
+            - ./docker-compose/nginx/conf.d:/etc/nginx/conf.d
+            - ./docker-compose/nginx/.htpasswd:/etc/nginx/.htpasswd
+        restart: always
+        depends_on:
+            - php-fpm
+        networks:
+            - truckdriver
+    php-fpm:
+        build:
+            context: ./docker-compose/php
+        container_name: rusnipizda-php
+        working_dir: /var/www/html
+        restart: always
+        volumes:
+            - ./truckdriver_laravel/:/var/www/html/
+            - ./logs/php.log:/var/log/fpm-php.www.log
+            - ./logs/supervisord:/var/log/supervisor/
+        networks:
+            - truckdriver
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'
+networks:
+   truckdriver:
+       driver: bridge
+
