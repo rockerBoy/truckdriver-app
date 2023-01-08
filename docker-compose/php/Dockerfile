@@ -21,6 +21,9 @@ RUN docker-php-ext-install -j$(nproc) gd
 RUN apt-get install --no-install-recommends -y libpq-dev
 RUN docker-php-ext-install pdo pgsql pdo_pgsql
 
+RUN pecl install redis
+RUN docker-php-ext-enable redis pgsql pdo_pgsql
+
 RUN php -r "readfile('https://getcomposer.org/installer');" | php -- --install-dir=/usr/bin/ --filename=composer \
     && curl -sLS https://deb.nodesource.com/setup_$NODE_VERSION.x | bash - \
     && apt-get install -y nodejs \
