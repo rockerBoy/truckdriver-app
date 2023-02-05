@@ -21,8 +21,8 @@ RUN docker-php-ext-install -j$(nproc) gd
 RUN apt-get install --no-install-recommends -y libpq-dev
 RUN docker-php-ext-install pdo pgsql pdo_pgsql
 
-RUN pecl install redis
-RUN docker-php-ext-enable redis pgsql pdo_pgsql
+RUN pecl install redis xdebug
+RUN docker-php-ext-enable redis pgsql pdo_pgsql xdebug
 
 RUN php -r "readfile('https://getcomposer.org/installer');" | php -- --install-dir=/usr/bin/ --filename=composer \
     && curl -sLS https://deb.nodesource.com/setup_$NODE_VERSION.x | bash - \
@@ -38,5 +38,6 @@ RUN php -r "readfile('https://getcomposer.org/installer');" | php -- --install-d
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
+#COPY php.ini /etc/php/8.1/fpm/php-fpm.conf
 USER 1000
 EXPOSE 80
