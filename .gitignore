@@ -1,4 +1,8 @@
-/truckdriver_laravel
-/truckdriver_laravel/*
-/truckdriver_laravel/
-/docker-compose/nginx/.htpasswd
+!.gitignore
+./truckdriver_laravel/
+./truckdriver_vue/
+docker-compose/nginx/.htpasswd
+logs/nginx
+logs/php.log
+logs/supervisord
+.env
