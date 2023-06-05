@@ -1,7 +1,7 @@
 !.gitignore
 ./truckdriver_laravel/
 ./truckdriver_vue/
-docker-compose/nginx/.htpasswd
+docker/nginx/.htpasswd
 logs/nginx
 logs/php.log
 logs/supervisord

@@ -8,15 +8,26 @@ services:
             - '443:443'
         volumes:
             - ./truckdriver_laravel:/var/www/html/
+            - ./truckdriver_vue:/var/www/app/
             - ./logs/nginx:/var/log/nginx/
-            - ./docker-compose/nginx/conf.d:/etc/nginx/conf.d
-            - ./docker-compose/nginx/.htpasswd:/etc/nginx/.htpasswd
+            - ./docker/nginx/conf.d:/etc/nginx/conf.d
+            - ./docker/nginx/ssl:/etc/nginx/ssl
+            - ./docker/nginx/.htpasswd:/etc/nginx/.htpasswd
         restart: always
         networks:
             - truckdriver
+        extra_hosts:
+            - 'api.truckdriver.loc:host-gateway'
+            - 'truckdriver.loc:host-gateway'
+        environment:
+            - DEFAULT_HOSTNAME=${DEFAULT_HOSTNAME}
+        depends_on: ['php-fpm', 'ui']
     php-fpm:
         build:
-            context: ./docker-compose/php
+            target: php
+            context: ./docker/php
+            args:
+                APP_USER: ${APP_USER}
         container_name: rusnipizda-php
         working_dir: /var/www/html
         restart: ${DOCKER_RESTART_POLICY}
@@ -28,7 +39,23 @@ services:
             - truckdriver
         extra_hosts:
             - 'host.docker.internal:host-gateway'
-        depends_on: ['nginx', 'redis', 'postgres', 'redis-web', 'mailhog']
+            - 'api.truckdriver.loc:host-gateway'
+            - 'rusnipizda.truckdriver.loc:host-gateway'
+        depends_on: ['redis', 'postgres', 'redis-web', 'mailhog']
+    ui:
+        build:
+            target: frontend
+            context: ./docker/php
+        container_name: rusnipizda-ui
+        working_dir: /var/www/html
+        restart: ${DOCKER_RESTART_POLICY}
+        command: npm run host
+        ports:
+            - "5173:5173"
+        volumes:
+            - ./truckdriver_vue/:/var/www/html/
+        networks:
+            - truckdriver
     redis:
         image: redis:latest
         env_file: .env
@@ -56,11 +83,11 @@ services:
             REDIS_PASSWORD: "${REDIS_PASSWORD}"
             NODE_TLS_REJECT_UNAUTHORIZED: "0"
         ports:
-            -   "${REDIS_WEB_PORT:-8085}:8081"
+            - "${REDIS_WEB_PORT:-8085}:8081"
         logging:
             driver: none
         depends_on:
-            -   redis
+            - redis
         networks:
             - truckdriver
     postgres:
