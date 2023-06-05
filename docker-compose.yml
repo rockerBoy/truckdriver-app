@@ -24,7 +24,7 @@ services:
         depends_on: ['php-fpm', 'ui']
     php-fpm:
         build:
-            target: php
+            target: php_base
             context: ./docker/php
             args:
                 APP_USER: ${APP_USER}
