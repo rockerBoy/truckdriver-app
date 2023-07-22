@@ -1,0 +1,113 @@
+version: '3.8'
+services:
+  proxy:
+    image: nginx:1.21-alpine
+    container_name: rusnipizda-proxy
+    ports:
+      - '8080:80'
+      - '443:443'
+    volumes:
+      - ../truckdriver_laravel:/var/www/html/
+      - ../truckdriver_vue:/var/www/app/
+      - ../logs/nginx:/var/log/nginx/
+      - ../docker/nginx/conf.d:/etc/nginx/conf.d
+      - ../docker/nginx/ssl:/etc/nginx/ssl
+      - ../docker/nginx/.htpasswd:/etc/nginx/.htpasswd
+    restart: always
+    networks:
+      - truckdriver
+    extra_hosts:
+      - 'api.truckdriver.loc:host-gateway'
+      - 'truckdriver.loc:host-gateway'
+    environment:
+      - DEFAULT_HOSTNAME=${DEFAULT_HOSTNAME}
+    depends_on: ['app', 'ui']
+  app:
+    build:
+      target: APP_PROD
+      context: ../docker/php
+    container_name: truckdriver-app
+    restart: unless-stopped
+    volumes:
+      - ../truckdriver_laravel/:/var/www/html/
+    networks:
+      - truckdriver
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+      - 'api.truckdriver.loc:host-gateway'
+      - 'rusnipizda.truckdriver.loc:host-gateway'
+    depends_on: ['redis', 'postgres', 'redis-web',]
+  ui:
+    build:
+      target: frontend
+      context: ../docker/php
+    container_name: rusnipizda-ui
+    working_dir: /var/www/html
+    restart: unless-stopped
+    command: npm run host
+    ports:
+      - "5173:5173"
+    volumes:
+      - ../truckdriver_vue/:/var/www/html/
+    networks:
+      - truckdriver
+  redis:
+    image: redis:latest
+    env_file: .env
+    restart: always
+    ports:
+      - '${FORWARD_REDIS_PORT:-6379}:6379'
+    volumes:
+      - ../data/redis:/data
+    networks:
+      - truckdriver
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      retries: 3
+      timeout: 5s
+    command: ["redis-server", '--appendonly', 'yes', '--requirepass', "${REDIS_PASSWORD}"]
+    expose:
+      -   "3679"
+  redis-web:
+    image: rediscommander/redis-commander
+    env_file: .env
+    environment:
+      PORT: "8081"
+      REDIS_HOST: redis
+      REDIS_DB: "${REDIS_DB}"
+      REDIS_PASSWORD: "${REDIS_PASSWORD}"
+      NODE_TLS_REJECT_UNAUTHORIZED: "0"
+    ports:
+      - "${REDIS_WEB_PORT:-8085}:8081"
+    logging:
+      driver: none
+    depends_on:
+      - redis
+    networks:
+      - truckdriver
+  postgres:
+    image: 'postgres:14'
+    env_file: .env
+    ports:
+      - '${FORWARD_DB_PORT:-5432}:5432'
+    environment:
+      POSTGRES_DB: "${DB_DATABASE}"
+      POSTGRES_USER: "root"
+      POSTGRES_PASSWORD: "root"
+    volumes:
+      - '../data/postgresql/:/var/lib/postgresql/data'
+    networks:
+      - truckdriver
+    healthcheck:
+      test: ["CMD", "pg_isready", "-q", "-d", "${DB_DATABASE}", "-U", "${DB_USERNAME}"]
+      retries: 3
+      timeout: 5s
+networks:
+  truckdriver:
+    driver: bridge
+    driver_opts:
+      com.docker.network.enable_ipv6: "false"
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.11.0.0/16
