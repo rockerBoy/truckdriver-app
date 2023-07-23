@@ -1,30 +1,8 @@
 version: '3.8'
 services:
-  proxy:
-    image: nginx:1.21-alpine
-    container_name: rusnipizda-proxy
-    ports:
-      - '8080:80'
-      - '443:443'
-    volumes:
-      - ../truckdriver_laravel:/var/www/html/
-      - ../truckdriver_vue:/var/www/app/
-      - ../logs/nginx:/var/log/nginx/
-      - ../docker/nginx/conf.d:/etc/nginx/conf.d
-      - ../docker/nginx/ssl:/etc/nginx/ssl
-      - ../docker/nginx/.htpasswd:/etc/nginx/.htpasswd
-    restart: always
-    networks:
-      - truckdriver
-    extra_hosts:
-      - 'api.truckdriver.loc:host-gateway'
-      - 'truckdriver.loc:host-gateway'
-    environment:
-      - DEFAULT_HOSTNAME=${DEFAULT_HOSTNAME}
-    depends_on: ['app', 'ui']
   app:
     build:
-      target: APP_PROD
+      target: app_prod
       context: ../docker/php
     container_name: truckdriver-app
     restart: unless-stopped
@@ -32,11 +10,7 @@ services:
       - ../truckdriver_laravel/:/var/www/html/
     networks:
       - truckdriver
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
-      - 'api.truckdriver.loc:host-gateway'
-      - 'rusnipizda.truckdriver.loc:host-gateway'
-    depends_on: ['redis', 'postgres', 'redis-web',]
+    depends_on: ['proxy', 'ui', 'redis', 'postgres', 'redis-web']
   ui:
     build:
       target: frontend
@@ -44,13 +18,30 @@ services:
     container_name: rusnipizda-ui
     working_dir: /var/www/html
     restart: unless-stopped
-    command: npm run host
+    command: npm run build
     ports:
       - "5173:5173"
     volumes:
       - ../truckdriver_vue/:/var/www/html/
     networks:
       - truckdriver
+  proxy:
+    image: nginx:1.21-alpine
+    container_name: rusnipizda-proxy
+    ports:
+      - '8080:80'
+      - '443:443'
+    volumes:
+      - ../truckdriver_laravel:/var/www/html
+      - ../truckdriver_vue:/var/www/app
+      - ../logs/nginx:/var/log/nginx
+      - ../docker/nginx/production/conf:/etc/nginx/conf.d
+      - ../docker/nginx/production/ssl:/etc/nginx/ssl
+    restart: always
+    networks:
+      - truckdriver
+    environment:
+      - DEFAULT_HOSTNAME=${DEFAULT_HOSTNAME}
   redis:
     image: redis:latest
     env_file: .env
