@@ -11,18 +11,24 @@ services:
     networks:
       - truckdriver
     depends_on: ['proxy', 'ui', 'redis', 'postgres', 'redis-web']
+  ui_build:
+    build:
+      target: build-stage
+      context: ../truckdriver_vue
+      dockerfile: ../docker/ui/Dockerfile
+    working_dir: /app
+    networks:
+      - truckdriver
   ui:
     build:
-      target: frontend
-      context: ../docker/php
+      target: build-stage
+      context: ../truckdriver_vue
+      dockerfile: ../docker/ui/Dockerfile
     container_name: rusnipizda-ui
-    working_dir: /var/www/html
+    working_dir: /app
     restart: unless-stopped
-    command: npm run build
     ports:
-      - "5173:5173"
-    volumes:
-      - ../truckdriver_vue/:/var/www/html/
+      - "5173:8080"
     networks:
       - truckdriver
   proxy:

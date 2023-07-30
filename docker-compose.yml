@@ -8,19 +8,29 @@ services:
         restart: unless-stopped
         volumes:
             - ./truckdriver_laravel/:/var/www/html/
+        ports:
+            - '9000:9000'
         networks:
             - truckdriver
-        depends_on: ['proxy', 'ui', 'redis', 'postgres', 'redis-web']
-    ui:
+        depends_on: ['proxy', 'redis', 'postgres', 'ui', 'redis-web']
+    ui_build:
         build:
             target: build-stage
+            context: ./truckdriver_vue
+            dockerfile: ../docker/ui/Dockerfile
+        working_dir: /app
+        networks:
+            - truckdriver
+    ui:
+        build:
+            target: frontend
             context: ./truckdriver_vue
             dockerfile: ../docker/ui/Dockerfile
         container_name: rusnipizda-ui
         working_dir: /app
         restart: unless-stopped
         ports:
-            - "5173:8080"
+            - '80:5173'
         networks:
             - truckdriver
     proxy:
@@ -30,11 +40,11 @@ services:
             - '8080:80'
             - '443:443'
         volumes:
-            - ./truckdriver_laravel:/var/www/html
-            - ./truckdriver_vue:/var/www/app
             - ./logs/nginx:/var/log/nginx
             - ./docker/nginx/dev/conf:/etc/nginx/conf.d
             - ./docker/nginx/dev/ssl:/etc/nginx/ssl
+            - ./truckdriver_laravel:/var/www/html
+            - ./truckdriver_vue/dist:/var/www/app
         restart: always
         networks:
             - truckdriver
