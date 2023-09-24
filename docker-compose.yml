@@ -34,15 +34,15 @@ services:
         networks:
             - truckdriver
     proxy:
-        image: nginx:1.21-alpine
+        image: nginx:stable-bullseye
         container_name: rusnipizda-proxy
         ports:
             - '8080:80'
             - '443:443'
         volumes:
             - ./logs/nginx:/var/log/nginx
-            - ./docker/nginx/dev/conf:/etc/nginx/conf.d
             - ./docker/nginx/dev/ssl:/etc/nginx/ssl
+            - ./docker/nginx/dev/config:/etc/nginx/conf.d
             - ./truckdriver_laravel:/var/www/html
             - ./truckdriver_vue/dist:/var/www/app
         restart: always

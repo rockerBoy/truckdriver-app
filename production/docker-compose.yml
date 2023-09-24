@@ -32,18 +32,18 @@ services:
     networks:
       - truckdriver
   proxy:
-    image: nginx:1.21-alpine
-    container_name: rusnipizda-proxy
+    image: nginx:stable-bullseye
+    container_name: truckdriver-proxy
     ports:
       - '8080:80'
       - '443:443'
     volumes:
+      - ../logs/nginx:/var/log/nginx
+      - ../docker/nginx/production/ssl:/etc/nginx/ssl
+      - ../docker/nginx/production/config:/etc/nginx/conf.d
       - ../truckdriver_laravel:/var/www/html
       - ../truckdriver_vue:/var/www/app
-      - ../logs/nginx:/var/log/nginx
-      - ../docker/nginx/production/conf:/etc/nginx/conf.d
-      - ../docker/nginx/production/ssl:/etc/nginx/ssl
-    restart: always
+    restart: unless-stopped
     networks:
       - truckdriver
     environment:
@@ -107,4 +107,4 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet: 172.11.0.0/16
+        - subnet: 152.11.0.0/16
