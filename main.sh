@@ -16,5 +16,4 @@ if [ -d ./truckdriver_vue/dist ]; then
     docker-compose down docker-compose up -d app redis-web && docker-compose ps
 else
     docker-compose up ui_build
-    echo  "${Red} artisan file not found"
 fi
