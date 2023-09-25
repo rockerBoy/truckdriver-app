@@ -42,7 +42,7 @@ services:
         volumes:
             - ./logs/nginx:/var/log/nginx
             - ./docker/nginx/dev/ssl:/etc/nginx/ssl
-            - ./docker/nginx/dev/config:/etc/nginx/conf.d
+            - ./docker/nginx/dev/conf:/etc/nginx/conf.d
             - ./truckdriver_laravel:/var/www/html
             - ./truckdriver_vue/dist:/var/www/app
         restart: always

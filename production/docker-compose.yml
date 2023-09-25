@@ -40,7 +40,7 @@ services:
     volumes:
       - ../logs/nginx:/var/log/nginx
       - ../docker/nginx/production/ssl:/etc/nginx/ssl
-      - ../docker/nginx/production/config:/etc/nginx/conf.d
+      - ../docker/nginx/production/conf:/etc/nginx/conf.d
       - ../truckdriver_laravel:/var/www/html
       - ../truckdriver_vue:/var/www/app
     restart: unless-stopped
@@ -48,57 +48,6 @@ services:
       - truckdriver
     environment:
       - DEFAULT_HOSTNAME=${DEFAULT_HOSTNAME}
-  redis:
-    image: redis:latest
-    env_file: .env
-    restart: always
-    ports:
-      - '${FORWARD_REDIS_PORT:-6379}:6379'
-    volumes:
-      - ../data/redis:/data
-    networks:
-      - truckdriver
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      retries: 3
-      timeout: 5s
-    command: ["redis-server", '--appendonly', 'yes', '--requirepass', "${REDIS_PASSWORD}"]
-    expose:
-      -   "3679"
-  redis-web:
-    image: rediscommander/redis-commander
-    env_file: .env
-    environment:
-      PORT: "8081"
-      REDIS_HOST: redis
-      REDIS_DB: "${REDIS_DB}"
-      REDIS_PASSWORD: "${REDIS_PASSWORD}"
-      NODE_TLS_REJECT_UNAUTHORIZED: "0"
-    ports:
-      - "${REDIS_WEB_PORT:-8085}:8081"
-    logging:
-      driver: none
-    depends_on:
-      - redis
-    networks:
-      - truckdriver
-  postgres:
-    image: 'postgres:14'
-    env_file: .env
-    ports:
-      - '${FORWARD_DB_PORT:-5432}:5432'
-    environment:
-      POSTGRES_DB: "${DB_DATABASE}"
-      POSTGRES_USER: "root"
-      POSTGRES_PASSWORD: "root"
-    volumes:
-      - '../data/postgresql/:/var/lib/postgresql/data'
-    networks:
-      - truckdriver
-    healthcheck:
-      test: ["CMD", "pg_isready", "-q", "-d", "${DB_DATABASE}", "-U", "${DB_USERNAME}"]
-      retries: 3
-      timeout: 5s
 networks:
   truckdriver:
     driver: bridge

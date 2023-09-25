@@ -57,7 +57,7 @@ RUN groupmod -g ${HOST_UID} www-data
 RUN chmod -R 755 $WORKDIR
 RUN chown -R www-data:www-data $WORKDIR
 
-FROM app_base as app_nginx
+FROM app_base AS app_nginx
 
 RUN apt install -y nginx
 
