@@ -1,3 +1,25 @@
+######################################
+##              Stage 1             ##
+##        Composer dependencies     ##
+######################################
+FROM composer:2.6 AS composer
+
+COPY truckdriver_laravel/composer.json composer.json
+COPY truckdriver_laravel/composer.lock composer.lock
+
+RUN composer install \
+    --ignore-platform-reqs \
+    --no-interaction \
+    --no-plugins \
+    --no-scripts \
+    --prefer-dist \
+    --quiet
+
+# end Stage 1 #
+
+######################################
+##           Nginx+PHP-FPM          ##
+######################################
 FROM php:8.2.5-fpm AS app_base
 
 ARG WORKDIR=/var/www/html
@@ -22,7 +44,7 @@ RUN apt-get update && apt-get install -y \
     supervisor \
     sqlite3  \
     cron
-
+RUN apt-get install -y nginx
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
@@ -31,10 +53,10 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 RUN docker-php-ext-install  zip mbstring exif pcntl bcmath -j$(nproc) gd intl
 
 # Install Redis and enable it
-RUN pecl install redis  && docker-php-ext-enable redis
+RUN pecl install redis  && docker-php-ext-enable redis > /dev/null
 
 # Install the PHP pdo_pgsql extention
-RUN docker-php-ext-install pdo_pgsql
+RUN docker-php-ext-install pdo_pgsql  > /dev/null
 
 # Set working directory
 WORKDIR $WORKDIR
@@ -42,10 +64,23 @@ WORKDIR $WORKDIR
 RUN rm -Rf /var/www/* && \
 mkdir -p /var/www/html
 
-ADD ./php.ini $PHP_INI_DIR/conf.d/
-ADD ./supervisor/supervisord.conf /etc/supervisor/supervisord.conf
+ADD docker/php/php.ini $PHP_INI_DIR/conf.d/
 
-COPY ./entrypoint.sh /usr/local/bin/
+# nginx - nginx app permissions
+RUN mkdir -p /run/nginx
+RUN chown -R www-data:www-data /var/www/*
+
+# bash alias for 'php artisan'
+RUN touch ~/.bashrc \
+    && echo 'source ~/.bash_profile' >> ~/.bashrc \
+    && echo 'alias art="php artisan"' >> ~/.bash_profile \
+    && echo 'alias watch="npm run watch &"' >> ~/.bash_profile \
+
+ENV LOG_CHANNEL=stderr
+
+COPY --from=composer /app/vendor /src/vendor
+
+COPY docker/php/entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint.sh
 RUN ln -s /usr/local/bin/entrypoint.sh /
 
@@ -56,10 +91,6 @@ RUN groupmod -g ${HOST_UID} www-data
 
 RUN chmod -R 755 $WORKDIR
 RUN chown -R www-data:www-data $WORKDIR
-
-FROM app_base AS app_nginx
-
-RUN apt install -y nginx
 
 FROM app_base AS app_prod
 
