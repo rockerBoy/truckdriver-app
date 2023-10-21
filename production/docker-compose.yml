@@ -1,0 +1,59 @@
+version: '3.8'
+services:
+  app:
+    build:
+      target: app_prod
+      context: ../docker/php
+    container_name: truckdriver-app
+    restart: unless-stopped
+    volumes:
+      - ../truckdriver_laravel/:/var/www/html/
+    networks:
+      - truckdriver
+    depends_on: ['proxy', 'ui', 'redis', 'postgres', 'redis-web']
+  ui_build:
+    build:
+      target: build-stage
+      context: ../truckdriver_vue
+      dockerfile: ../docker/ui/Dockerfile
+    working_dir: /app
+    networks:
+      - truckdriver
+  ui:
+    build:
+      target: build-stage
+      context: ../truckdriver_vue
+      dockerfile: ../docker/ui/Dockerfile
+    container_name: rusnipizda-ui
+    working_dir: /app
+    restart: unless-stopped
+    ports:
+      - "5173:8080"
+    networks:
+      - truckdriver
+  proxy:
+    image: nginx:stable-bullseye
+    container_name: truckdriver-proxy
+    ports:
+      - '8080:80'
+      - '443:443'
+    volumes:
+      - ../logs/nginx:/var/log/nginx
+      - ../docker/nginx/production/ssl:/etc/nginx/ssl
+      - ../docker/nginx/production/conf:/etc/nginx/conf.d
+      - ../truckdriver_laravel:/var/www/html
+      - ../truckdriver_vue:/var/www/app
+    restart: unless-stopped
+    networks:
+      - truckdriver
+    environment:
+      - DEFAULT_HOSTNAME=${DEFAULT_HOSTNAME}
+networks:
+  truckdriver:
+    driver: bridge
+    driver_opts:
+      com.docker.network.enable_ipv6: "false"
+    ipam:
+      driver: default
+      config:
+        - subnet: 152.11.0.0/16
