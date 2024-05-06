@@ -1,0 +1,6 @@
+[submodule "truckdriver_laravel"]
+	path = truckdriver_laravel
+	url = https://github.com/rockerBoy/truckdriver-laravel.git
+[submodule "truckdriver_vue"]
+	path = truckdriver_vue
+	url = https://github.com/rockerBoy/truckdriver_vue.git

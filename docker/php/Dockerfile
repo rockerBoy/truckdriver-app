@@ -31,7 +31,7 @@ RUN composer install \
 ##              Stage 2             ##
 ##           Nginx+PHP-FPM          ##
 ######################################
-FROM php:8.2.5-fpm AS app_base
+FROM php:8.3.0-fpm AS app_base
 
 ARG WORKDIR=/var/www/html
 ENV DOCUMENT_ROOT=${WORKDIR}
