@@ -7,3 +7,4 @@ logs/php.log
 logs/supervisord
 .env
 logs
+.idea
