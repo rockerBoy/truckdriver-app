@@ -4,7 +4,7 @@
 ######################################
 FROM composer:2.6 AS composer
 
-ENV DOCUMENT_ROOT=truckdriver_laravel
+ENV DOCUMENT_ROOT=core
 COPY ${DOCUMENT_ROOT}/composer.json composer.json
 COPY ${DOCUMENT_ROOT}/composer.lock composer.lock
 COPY ${DOCUMENT_ROOT}/artisan artisan
