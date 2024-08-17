@@ -2,6 +2,6 @@
 
 namespace App\Http\Middleware;
 
-class CanResetUserPassword {
-
+class CanResetUserPassword
+{
 }

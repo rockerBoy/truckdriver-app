@@ -4,10 +4,10 @@
 ######################################
 FROM composer:2.6 AS composer
 
-ENV DOCUMENT_ROOT=core
-COPY ${DOCUMENT_ROOT}/composer.json composer.json
-COPY ${DOCUMENT_ROOT}/composer.lock composer.lock
-COPY ${DOCUMENT_ROOT}/artisan artisan
+ENV DOCUMENT_ROOT=.
+COPY ${DOCUMENT_ROOT}/core/composer.json composer.json
+COPY ${DOCUMENT_ROOT}/core/composer.lock composer.lock
+COPY ${DOCUMENT_ROOT}/core/artisan artisan
 
 RUN composer update \
                  --ignore-platform-reqs \
@@ -31,13 +31,15 @@ RUN composer install \
 ##              Stage 2             ##
 ##           Nginx+PHP-FPM          ##
 ######################################
-FROM php:8.3.0-fpm AS app_base
+FROM php:8.3-fpm AS app_base
 
 ARG WORKDIR=/var/www/html
 ENV DOCUMENT_ROOT=${WORKDIR}
 ENV LARAVEL_PROCS_NUMBER=1
 ARG HOST_UID=1000
 ENV USER=www-data
+
+COPY docker ./docker
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -75,8 +77,8 @@ WORKDIR $WORKDIR
 RUN rm -Rf /var/www/* && \
 mkdir -p /var/www/html
 
-ADD docker/php/conf.d/php.ini $PHP_INI_DIR/conf.d/
-COPY docker/nginx/production/nginx.conf /etc/nginx/
+ADD ./docker/php/conf.d/php.ini $PHP_INI_DIR/conf.d/
+COPY ./docker/nginx/production/nginx.conf /etc/nginx/
 
 # nginx - nginx app permissions
 RUN mkdir -p /run/nginx
@@ -96,7 +98,7 @@ COPY --from=composer /usr/bin/composer /usr/bin/composer
 RUN composer --version && php -v
 COPY --from=composer /app/vendor /src/vendor
 
-COPY docker/php/entrypoint.sh /usr/local/bin/
+COPY ./docker/php/entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint.sh
 RUN ln -s /usr/local/bin/entrypoint.sh /
 

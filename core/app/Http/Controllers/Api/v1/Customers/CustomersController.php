@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Api\v1\Customers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\CustomerRequest;
+use App\Http\Requests\UpdateCustomerRequest;
 use App\Http\Resources\CustomerResource;
 use App\Models\Customer;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
+use Inertia\Inertia;
 use OpenApi\Annotations as OA;
 
 /**
@@ -19,22 +19,29 @@ use OpenApi\Annotations as OA;
  */
 class CustomersController extends Controller
 {
-    /**
-     * @return AnonymousResourceCollection
-     */
-    public function index(): AnonymousResourceCollection
+    public function index(): \Inertia\Response
     {
-        return CustomerResource::collection(
-            Customer::orderBy('created_at', 'desc')->paginate(20)
-        );
+        $customers = Customer::orderBy('created_at', 'desc')
+                             ->paginate(20)
+                             ->withQueryString()
+                             ->through(fn ($customer) => [
+                                 'uuid'         => $customer->uuid,
+                                 'last_name'    => $customer->last_name,
+                                 'first_name'   => $customer->first_name,
+                                 'phone_number' => $customer->phone_number,
+                             ]);
+
+        return Inertia::render('Customers/Index', [
+            'customers' => $customers,
+        ]);
     }
 
     /**
-     * @param CustomerRequest $request
+     * @param UpdateCustomerRequest $request
      *
      * @return CustomerResource
      */
-    public function store(CustomerRequest $request): CustomerResource
+    public function store(UpdateCustomerRequest $request): CustomerResource
     {
         $customer = Customer::create($request->validated());
 
@@ -53,7 +60,12 @@ class CustomersController extends Controller
         return new CustomerResource($customer);
     }
 
-    public function update(CustomerRequest $request): CustomerResource
+    public function edit()
+    {
+        return Inertia::render('Customers/Edit', []);
+    }
+
+    public function update(UpdateCustomerRequest $request): CustomerResource
     {
         $customer = Customer::findOrFail($request->uuid);
         $customer->update($request->validated());
