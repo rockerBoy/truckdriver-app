@@ -22,7 +22,7 @@ class CustomerAdditionalInformation extends Model
         'issues_description',
         'know_foreign_language',
         'certificates',
-        'notes'
+        'notes',
     ];
 
     protected $table = 'customer_additional_information';

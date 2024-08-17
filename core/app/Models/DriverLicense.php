@@ -50,8 +50,8 @@ class DriverLicense extends Model implements CipherSweetEncrypted
         $defaultDate = '0000-00-00';
 
         return Attribute::make(
-            set: fn($value) => $value ?Carbon::createFromFormat('d.m.Y', $value)
-                ->format('Y-m-d'): null
+            set: fn ($value) => $value ? Carbon::createFromFormat('d.m.Y', $value)
+                ->format('Y-m-d') : null
         );
     }
 
@@ -63,7 +63,7 @@ class DriverLicense extends Model implements CipherSweetEncrypted
         $defaultDate = '0000-00-00';
 
         return Attribute::make(
-            set: fn($value) => $value ? Carbon::createFromFormat('d.m.Y', $value)
+            set: fn ($value) => $value ? Carbon::createFromFormat('d.m.Y', $value)
                 ->format('Y-m-d') : null
         );
     }

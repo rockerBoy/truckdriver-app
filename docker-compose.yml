@@ -1,30 +1,54 @@
-version: '3.8'
+#services:
+#    db:
+#        image: 'postgres:16.3-bookworm'
+#        env_file: .env
+#        ports:
+#            - '${FORWARD_DB_PORT:-5432}:5432'
+#        environment:
+#            POSTGRES_DB: "${DB_DATABASE}"
+#            POSTGRES_USER: "root"
+#            POSTGRES_PASSWORD: "root"
+#        networks:
+#            - truckdriver-db-network
+#        healthcheck:
+#            test: pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}
+#            interval: 5s
+#            timeout: 10s
+#            retries: 20
+#networks:
+#    truckdriver-db-network:
+#        driver: bridge
+#        driver_opts:
+#            com.docker.network.enable_ipv6: "false"
+#        ipam:
+#            driver: default
+#            config:
+#                - subnet: 183.11.0.0/16
+#
+#
 services:
-    ui_build:
-        build:
-            target: build-stage
-            context: ./truckdriver_vue
-            dockerfile: ../docker/ui/Dockerfile
-        working_dir: /app
-        networks:
-            - truckdriver
-    ui:
-        build:
-            target: frontend
-            context: ./truckdriver_vue
-            dockerfile: ../docker/ui/Dockerfile
-        container_name: rusnipizda-ui
-        working_dir: /app
-        restart: unless-stopped
-        ports:
-            - '80:5173'
-        networks:
-            - truckdriver
+#    ui_build:
+#        build:
+#            target: build-stage
+#            context: ./truckdriver_vue
+#            dockerfile: ../docker/ui/Dockerfile
+#        working_dir: /app
+#        networks:
+#            - truckdriver
+#    ui:
+#        build:
+#            target: frontend
+#            context: ./truckdriver_vue
+#            dockerfile: ../docker/ui/Dockerfile
+#        container_name: rusnipizda-ui
+#        working_dir: /app
+#        restart: unless-stopped
+#        ports:
+#            - '80:5173'
+#        networks:
+#            - truckdriver
     app:
-        build:
-            context: .
-            dockerfile: docker/php/Dockerfile
-            target: app_dev
+        image: rockerboy/truckdriver-app:latest
         container_name: truckdriver-app-dev
         restart: always
         volumes:

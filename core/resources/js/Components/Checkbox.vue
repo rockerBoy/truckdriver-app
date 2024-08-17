@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue';
+import InputLabel from "@/Components/InputLabel.vue";
 
 const emit = defineEmits(['update:checked']);
 
@@ -9,6 +10,10 @@ const props = defineProps({
         default: false,
     },
     value: {
+        type: String,
+        default: null,
+    },
+    label: {
         type: String,
         default: null,
     },
@@ -33,4 +38,5 @@ const proxyChecked = computed({
         :value="value"
         class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
     >
+<!--    <InputLabel :value="label" v-if="label.length > 0"></InputLabel>-->
 </template>

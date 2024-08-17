@@ -70,7 +70,7 @@ class CustomerAddressController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\CustomerAddress  $customerAddress
+     * @param  CustomerAddress  $customerAddress
      * @return Response
      */
     public function destroy(CustomerAddress $customerAddress)

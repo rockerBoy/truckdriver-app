@@ -9,7 +9,6 @@ use App\Models\Customer;
 use App\Models\CustomerExperience;
 use App\Models\DriverTrailer;
 use App\Models\Trailer;
-use Illuminate\Http\Request;
 
 class CustomerExperienceController extends Controller
 {
