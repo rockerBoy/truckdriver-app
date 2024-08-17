@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+[x-cloak] {
+    display: none;
+}
+
+.truckdriver-login__bg {
+    background: url('/images/login_bg.jpg') no-repeat center center;
+    background-size: cover;
+}
