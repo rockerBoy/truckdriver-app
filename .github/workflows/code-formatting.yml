@@ -19,6 +19,7 @@ jobs:
           extensions: mbstring, intl, bcmath, pdo_pgsql
 
       - name: Install Composer dependencies
+        working-directory: ./core
         run: composer install --prefer-dist --no-progress --no-suggest --no-interaction
 
       - name: Install PHP_CodeSniffer
