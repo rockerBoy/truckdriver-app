@@ -63,7 +63,7 @@ services:
             - truckdriver
         extra_hosts:
             - "host.docker.internal:host-gateway"
-        depends_on: ['proxy','redis', 'postgres']
+        depends_on: ['redis', 'postgres']
     proxy:
         image: nginx:stable-bullseye
         container_name: rusnipizda-proxy
@@ -80,6 +80,9 @@ services:
             - truckdriver
         environment:
             - DEFAULT_HOSTNAME=${DEFAULT_HOSTNAME}
+        depends_on:
+            app:
+                condition: service_started
     redis:
         image: redis:latest
         env_file: .env
