@@ -70,6 +70,7 @@ jobs:
         run: php --version
 
       - name: Execute tests (Unit and Feature tests) via PHPUnit
+        working-directory: ./core
         env:
           DB_CONNECTION: pgsql
           DB_DATABASE: db_test_laravel
