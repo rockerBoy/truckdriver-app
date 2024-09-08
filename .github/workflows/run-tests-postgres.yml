@@ -84,6 +84,12 @@ jobs:
           CIPHERSWEET_KEY: ${{ secrets.CIPHERSWEET_KEY }}
         run: php artisan migrate:fresh --seed --env=testing && php artisan ciphersweet:encrypt "\App\Models\Customer" ${{ secrets.CIPHERSWEET_KEY }}
 
+      - name: Build assets
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm run build
+
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         working-directory: ./core
         env:
