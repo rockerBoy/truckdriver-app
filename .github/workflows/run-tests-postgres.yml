@@ -88,7 +88,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm ci && npm run build
+        working-directory: ./core
+        run: npm ci && npm run build
 
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         working-directory: ./core
