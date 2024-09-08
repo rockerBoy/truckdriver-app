@@ -12,8 +12,8 @@ jobs:
       postgres:
         image: postgres:latest
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: ${{ secrets.TEST_DB_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.TEST_DB_PWD }}
           POSTGRES_DB: db_test_laravel
         ports:
           - 55432:5432
