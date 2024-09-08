@@ -73,6 +73,10 @@ jobs:
         working-directory: ./core
         run: cp .env.example .env && php artisan key:generate
 
+      - name: Running the migrations
+        working-directory: ./core
+        run: php artisan migrate:fresh --seed
+
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         working-directory: ./core
         env:
