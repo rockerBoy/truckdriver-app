@@ -69,7 +69,7 @@ jobs:
       - name: PHP Version
         run: php --version
 
-      - name: Generate Application Key
+      - name: Generate Application Keys
         working-directory: ./core
         run: cp .env.example .env && php artisan key:generate
 
@@ -81,7 +81,7 @@ jobs:
           DB_PORT: 55432
           DB_USERNAME: ${{ secrets.TEST_DB_USER }}
           DB_PASSWORD: ${{ secrets.TEST_DB_PWD }}
-        run: php artisan migrate:fresh --seed
+        run: php artisan migrate:fresh --seed --env=testing
 
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         working-directory: ./core
@@ -91,4 +91,5 @@ jobs:
           DB_PORT: 55432
           DB_USERNAME: ${{ secrets.TEST_DB_USER }}
           DB_PASSWORD: ${{ secrets.TEST_DB_PWD }}
+          CIPHERSWEET_KEY: ${{ secrets.CIPHERSWEET_KEY }}
         run: vendor/bin/phpunit --testdox
