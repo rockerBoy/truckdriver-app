@@ -81,7 +81,8 @@ jobs:
           DB_PORT: 55432
           DB_USERNAME: ${{ secrets.TEST_DB_USER }}
           DB_PASSWORD: ${{ secrets.TEST_DB_PWD }}
-        run: php artisan migrate:fresh --seed --env=testing
+          CIPHERSWEET_KEY: ${{ secrets.CIPHERSWEET_KEY }}
+        run: php artisan migrate:fresh --seed --env=testing && php artisan ciphersweet:encrypt "\App\Models\Customer" ${{ secrets.CIPHERSWEET_KEY }}
 
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         working-directory: ./core
