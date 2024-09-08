@@ -3,7 +3,7 @@
 namespace Tests\Unit\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Api\v1\Customers\CustomersController;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Inertia\Response;
 use Tests\TestCase;
 
 final class CustomersControllerTest extends TestCase
@@ -19,6 +19,6 @@ final class CustomersControllerTest extends TestCase
     public function test_if_index_returns_collection(): void
     {
         $result = $this->controller->index();
-        $this->assertInstanceOf(AnonymousResourceCollection::class, $result);
+        $this->assertInstanceOf(Response::class, $result);
     }
 }

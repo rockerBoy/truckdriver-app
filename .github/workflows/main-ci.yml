@@ -1,0 +1,31 @@
+name: Trickdriver Main Branch CI
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3
+          extensions: mbstring, intl, bcmath, pdo_pgsql
+
+      - name: Install Composer dependencies
+        working-directory: ./core
+        run: composer install --prefer-dist --no-progress --no-suggest --no-interaction
+
+      - name: Install PHP_CodeSniffer
+        working-directory: ./core
+        run: composer require --dev squizlabs/php_codesniffer
+
+      - name: Run PHP_CodeSniffer
+        working-directory: ./core
+        run: composer run lint

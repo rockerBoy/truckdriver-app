@@ -1,2 +1,8 @@
-.git
+**.git
+.idea
 docker-compose.yml
+README.md
+.github
+docker/**/dev.Dockerfile
+docker/**/Dockerfile
+docker/**/prod.Dockerfile
