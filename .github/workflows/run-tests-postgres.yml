@@ -1,7 +1,6 @@
-name: PostgreSQL Tests
+name: Truckdriver App Tests
 
 on:
-  - push
   - pull_request
 
 jobs:
@@ -23,21 +22,13 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
-    strategy:
-      fail-fast: false
-      matrix:
-        operating-system: [ubuntu-latest]
-        php-versions: ['8.3']
-
-    name: P${{ matrix.php-versions }} - L${{ matrix.laravel }} - ${{ matrix.dependency-stability }} - ${{ matrix.operating-system}}
-
     steps:
       - uses: actions/checkout@v4
 
       - name: Install PHP versions
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php-versions }}
+          php-version: 8.3
 
       - name: Get Composer Cache Directory 2
         id: composer-cache

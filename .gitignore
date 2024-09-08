@@ -8,3 +8,6 @@ logs/supervisord
 .env
 logs
 .idea
+.php-cs-fixer.cache
+.phpunit.result.cache
+dumps/*
