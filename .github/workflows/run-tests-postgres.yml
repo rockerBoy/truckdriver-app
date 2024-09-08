@@ -69,6 +69,10 @@ jobs:
       - name: PHP Version
         run: php --version
 
+      - name: Generate Application Key
+        working-directory: ./core
+        run: php artisan key:generate
+
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         working-directory: ./core
         env:
