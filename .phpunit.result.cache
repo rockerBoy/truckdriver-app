@@ -1,1 +1,0 @@
-{"version":1,"defects":{"Tests\\Unit\\Controllers\\Api\\v1\\CustomersControllerTest::testIndex":8,"Tests\\Unit\\Controllers\\Api\\v1\\CustomersControllerTest::testShow":8,"Tests\\Unit\\Controllers\\Api\\v1\\CustomersControllerTest::test_index_returns_customer_resource_collection":8},"times":{"Tests\\Unit\\Controllers\\Api\\v1\\CustomersControllerTest::testIndex":0.005}}
