@@ -75,6 +75,12 @@ jobs:
 
       - name: Running the migrations
         working-directory: ./core
+        env:
+          DB_CONNECTION: pgsql
+          DB_DATABASE: db_test_laravel
+          DB_PORT: 55432
+          DB_USERNAME: ${{ secrets.TEST_DB_USER }}
+          DB_PASSWORD: ${{ secrets.TEST_DB_PWD }}
         run: php artisan migrate:fresh --seed
 
       - name: Execute tests (Unit and Feature tests) via PHPUnit
