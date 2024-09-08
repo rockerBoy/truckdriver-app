@@ -71,7 +71,7 @@ jobs:
 
       - name: Generate Application Key
         working-directory: ./core
-        run: php artisan key:generate
+        run: cp .env.example .env && php artisan key:generate
 
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         working-directory: ./core
