@@ -82,14 +82,18 @@ jobs:
           DB_USERNAME: ${{ secrets.TEST_DB_USER }}
           DB_PASSWORD: ${{ secrets.TEST_DB_PWD }}
           CIPHERSWEET_KEY: ${{ secrets.CIPHERSWEET_KEY }}
-        run: php artisan migrate:fresh --seed --env=testing && php artisan ciphersweet:encrypt "\App\Models\Customer" ${{ secrets.CIPHERSWEET_KEY }}
+        run: |
+          php artisan migrate:fresh --seed --env=testing
+          php artisan ciphersweet:encrypt "\App\Models\Customer" ${{ secrets.CIPHERSWEET_KEY }}
 
-      - name: Build assets
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v1
+        name: Use Node.js 20
         with:
           node-version: 20
-        working-directory: ./core
-        run: npm ci && npm run build
+      - name: Install, build, test
+        run: |
+          npm install
+          npm run build
 
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         working-directory: ./core
