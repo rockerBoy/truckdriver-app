@@ -77,7 +77,7 @@ jobs:
           php artisan migrate:fresh --seed --env=testing
           php artisan ciphersweet:encrypt "\App\Models\Customer" ${{ secrets.CIPHERSWEET_KEY }}
 
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v4
         name: Use Node.js 20
         with:
           node-version: 20
