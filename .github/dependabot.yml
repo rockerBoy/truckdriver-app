@@ -11,6 +11,6 @@ updates:
     labels:
       - "dependencies"
   - package-ecosystem: "composer"
-    directory: "/"
+    directory: "/core"
     schedule:
       interval: "weekly"
