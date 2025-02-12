@@ -21,6 +21,6 @@
     "dependencies": {
         "lodash": "^4.17.21",
         "maska": "^3.0.0-beta2",
-        "sweetalert2": "^11.15.10"
+        "sweetalert2": "^11.16.0"
     }
 }
